@@ -1,14 +1,16 @@
-# Imagen base de R con Shiny Server
-FROM rocker/shiny:latest
+FROM rocker/shiny:4.4.0
 
-# Instalar paquetes R necesarios para tu app
-RUN R -e "install.packages(c('shiny', 'shinydashboard', 'lavaan', 'readxl', 'readr', 'DT', 'semPlot', 'openxlsx'))"
+# Instalar las librerías necesarias
+RUN R -e "install.packages(c('shiny', 'shinydashboard', 'DT', 'readxl', 'readr', 'lavaan', 'semPlot', 'openxlsx'), repos='https://cloud.r-project.org/')"
 
-# Copiar todos los archivos de tu proyecto al contenedor
+# Copiar los archivos de la app al servidor shiny
 COPY . /srv/shiny-server/
 
-# Exponer el puerto donde correrá la app
+# Cambiar permisos de la carpeta
+RUN chown -R shiny:shiny /srv/shiny-server
+
+# Exponer el puerto 3838
 EXPOSE 3838
 
-# Iniciar Shiny Server al arrancar
+# Ejecutar shiny-server al levantar el contenedor
 CMD ["/usr/bin/shiny-server"]
